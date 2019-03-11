@@ -1,0 +1,21 @@
+dist: trusty
+language: python
+services:
+  - redis
+python:
+  - '3.6'
+before_install:
+  - pip install codecov
+  - pip install pipenv
+install:
+  - pipenv install --dev
+script:
+  - pipenv run pytest --cov=falcon_redis_cache tests
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then codecov; fi
+deploy:
+  provider: pypi
+  user: neetjn
+  password:
+    secure: DNkv7Y7hElBiabdCUeoaXfXHamyXxy2WoFka+7vTTSgVXfdKemygyc5aCYFL5QdpUlDSlkrZ/VAtdfA5g1dWd0j9zHFFLTXN9EQiNgpYvYGgY6tHGSfTMTOkqEjyxuQ6MhTl5ClLP9Br/JBoecvUIwzOsNgfL1YYxRUwEKX31cRNG0lm7tXuCYWLaq7qfCfZOxYAlhQyFJbl/wrDUelATcIBUkK5H1Vv4ia6d0hdhlNFJvcGOTLpeEIlJObvbBXmdm2RwzcrUrIsQHv2zsjNWbqbiWptT4ZF2f+BS2ra4/tn0OcHk7tZ6kr0eo8ukr3ny/uNRPbz8YV1kpfOa5v7RNmlfYCdi4dbjogFZLYZ1kBos0puVs5CXsZDtJZQnYrlW2+dC9fynBdZK/OPi1uOYE9qu3nDE+Vmn6yUksE8UiL7K3ZpGf0uGGsoHKidGXwsD9/LQtpuVFp5NaFNW/ld8MUxIeD36OUFygZ4UheDOa7CyZkLPU0UlNc+YIrWRBrqF8irhY6lF70uW+eMvU0Gz3LxSxlcC0z+GZgsmwSAFIX+HCEEjsS6nS3eeqoS3mAkAs9QDXfn54j2AjIShPpcYucUCdgVtbcVgBlPNBdoEtlHXW1cCr+4kwx1VrCWFTIwIOhUFBEjPUTUizlcn5iKUhHfUI85jAehA8Zp81dIbHQ=
+  on:
+    branch: master
