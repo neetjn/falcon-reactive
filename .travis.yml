@@ -1,7 +1,5 @@
 dist: trusty
 language: python
-services:
-  - redis
 python:
   - '3.6'
 before_install:
@@ -10,7 +8,7 @@ before_install:
 install:
   - pipenv install --dev
 script:
-  - pipenv run pytest --cov=falcon_redis_cache tests
+  - pipenv run pytest --cov=falcon_reactive tests
   - if [ "$TRAVIS_BRANCH" == "master" ]; then codecov; fi
 deploy:
   provider: pypi
