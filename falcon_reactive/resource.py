@@ -1,0 +1,2 @@
+class ReactiveResource(object):
+
