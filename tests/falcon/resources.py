@@ -1,16 +1,12 @@
 import json
-import redis
 import time
 import os
 import falcon
 from falcon.errors import HTTPBadRequest, HTTPNotFound
-from falcon_redis_cache.hooks import CacheProvider
-from falcon_redis_cache.resource import CacheCompaitableResource
-
-from tests.falcon.constants import REDIS_HOST, REDIS_PORT
+from falcon_reactive.hooks import Reactive
+from falcon_reactive.resource import ReactiveResource
 
 
-MAX_SLEEP_TIME = int(os.environ.setdefault('MAX_SLEEP_TIME', '5'))
 Resources = [{'_id': str(n), 'name': '{}-budget'.format(n)} for n in range(5)]
 
 
@@ -38,18 +34,7 @@ def create_resource(resource):
     Resources.append()
 
 
-class DebugResource(CacheCompaitableResource):
-
-    route = '/test/debug/'
-
-    def on_delete(self, req, resp):
-        resp.status = falcon.HTTP_204
-        client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT)
-        client.flushall()
-        client.flushdb()
-
-
-class TestResource(CacheCompaitableResource):
+class TestResource(ReactiveResource):
 
     route = '/test/{test_id}/'
 
@@ -78,28 +63,3 @@ class TestResource(CacheCompaitableResource):
             delete_resource(test_id)
         except StopIteration:
             raise HTTPNotFound()
-
-
-class TestUniqueResource(TestResource):
-
-    route = '/test/unique/{test_id}/'
-    unique_cache = True
-
-
-class TestCollectionResource(CacheCompaitableResource):
-
-    route = '/test/'
-    cache_with_query = True
-
-    @CacheProvider.from_cache
-    def on_get(self, req, resp):
-        time.sleep(MAX_SLEEP_TIME)
-        resp.body = json.dumps(Resources)
-
-    def on_post(self, req, resp):
-        resp.status = falcon.HTTP_201
-        payload = json.loads(req.stream.read())
-        create_resource(payload)
-
-
-TestResource.binded_resources = [TestCollectionResource]

@@ -1,2 +1,2 @@
 class ReactiveResource(object):
-
+    pass
